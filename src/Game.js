@@ -6,8 +6,7 @@ function Game() {
   const [gameStatus, setGameStatus] = useState("waiting");
   return (
     <div>
-      board
-      <Board level={"easy"} height={10} width={10} gameStatus={gameStatus} />
+      <Board level={"hard"} height={10} width={10} gameStatus={gameStatus} />
     </div>
   );
 }
