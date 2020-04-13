@@ -2,13 +2,13 @@ import React from "react";
 
 const DEV_MODE = true;
 
-function Tile({ x, y, flipped, flagged, isBomb, value, onClick }) {
-  const handleClick = e => {
+function Tile({ x, y, flipped, flagged, bomb, value, onClick }) {
+  const handleClick = (e) => {
     e.preventDefault();
     if (flipped) {
       return;
     }
-    if (e.nativeEvent.which === 1) {
+    if (e.nativeEvent.which === 1 && !flagged) {
       onClick(y, x);
     } else if (e.nativeEvent.which === 3) {
       onClick(y, x, true);
@@ -21,13 +21,13 @@ function Tile({ x, y, flipped, flagged, isBomb, value, onClick }) {
         height: 50,
         width: 50,
         border: `solid thick ${
-          (DEV_MODE || flipped) && isBomb ? "red" : "black"
-        }`
+          (DEV_MODE || flipped) && bomb ? "red" : "black"
+        }`,
       }}
       onClick={handleClick}
       onContextMenu={handleClick}
     >
-      <div>{flagged ? "flag" : flipped && value ? value : ""}</div>
+      <div>{flagged ? "flag" : flipped ? value : ""}</div>
     </div>
   );
 }
