@@ -1,5 +1,5 @@
 import React from "react";
-const DEV_MODE = true;
+const DEV_MODE = false;
 const BOMB = (
   <span role="img" aria-label="horns">
     😈
