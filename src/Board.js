@@ -9,7 +9,29 @@ class Board extends React.Component {
   }
 
   componentDidMount() {
+    // initialize a board with default values passed by the Game
     this.initializeBoard();
+  }
+
+  // Why a class component instead of a functional one?
+  // i felt this was clearer than using refs with Hooks to keep track of the component's previous props
+  componentDidUpdate(prevProps) {
+    const { gameStatus, height, level } = this.props;
+    const prevGameStatus = prevProps.gameStatus;
+    const prevHeight = prevProps.height;
+    const prevLevel = prevProps.level;
+
+    // note: these can be combined into one `if` statement but i thought it clearer to break them out
+    // check to see if the board received new props. If so, reinitialize the board
+    if (prevHeight !== height || prevLevel !== level) {
+      this.initializeBoard();
+    }
+
+    // user made no changes to the game configuration (i.e.: he or she just wants to play again)
+    // we make a new board
+    if (prevGameStatus !== "playing" && gameStatus === "playing") {
+      this.initializeBoard();
+    }
   }
 
   initializeBoard = () => {
@@ -17,6 +39,7 @@ class Board extends React.Component {
     const board = this.createBoardWithBombs();
     let bombCount = 0;
 
+    // O(n^2) is far from ideal, but we're dealing with small numbers here so it won't matter
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const tileObject = board[y][x];
@@ -50,6 +73,8 @@ class Board extends React.Component {
   getSurroundingBombCount(board, y, x) {
     const { height, width } = this.props;
     let count = 0;
+
+    // check all surrounding squares for a bomb
     for (let row = y - 1; row <= y + 1; row++) {
       if (row < 0 || row === width) {
         continue;
@@ -80,6 +105,8 @@ class Board extends React.Component {
 
   handleTileClick = (y, x, toggleFlag) => {
     let { board, bombCount } = this.state;
+    // nextTile createas a reference to board[y][x], so we never have to reassign board[y][x] = nextTile
+    // after making our changes to nextTile
     const nextTile = board[y][x];
 
     if (toggleFlag) {
@@ -102,6 +129,7 @@ class Board extends React.Component {
   };
 
   flipTileAndSurroundingTiles(board, y, x) {
+    // I love recursion because i love recurion
     const { height, width } = this.props;
     for (let row = y - 1; row <= y + 1; row++) {
       if (row < 0 || row === width) {
@@ -126,50 +154,70 @@ class Board extends React.Component {
     let flipped = 0;
     let actualBombCount = 0;
 
-    board.forEach((t) => {
-      tileCount++;
-      t.bomb && actualBombCount++;
-      t.flipped && flipped++;
+    board.forEach(row => {
+      row.forEach(tile => {
+        tileCount++;
+        tile.bomb && actualBombCount++;
+        tile.flipped && flipped++;
+      });
     });
 
     return flipped + actualBombCount === tileCount;
   }
 
   endGame(gameWon = false) {
-    this.props.setGameStatus(gameWon ? "won" : "lost");
+    this.props.reportEndOfGame(gameWon ? "won" : "lost");
   }
 
-  resetGame = () => {
-    this.props.setGameStatus("waiting");
-    this.initializeBoard();
-  };
-
   render() {
-    const { gameStatus } = this.props;
+    const { gameStatus, disableTiles } = this.props;
     const { board, bombCount } = this.state;
 
-    const revealAll = gameStatus !== "waiting";
-
+    // logic regarding how to show Tiles is derived from the current state of
+    // the Game, leaving the Board free to make decisions on how to show its Tiles
+    const revealAllTiles = gameStatus === "lost";
+    const revealNoTiles = gameStatus === "waiting";
     return (
       <>
-        <button onClick={() => this.resetGame()}>Reset Game</button>
-        {bombCount}
-
-        <div>
-          {board &&
-            board.map((row, i) => (
-              // key can be index because we're not worried about order changing
-              <div key={i} style={{ display: "flex" }}>
-                {row.map((tile) => (
-                  <Tile
-                    {...tile}
-                    flipped={revealAll ? true : tile.flipped}
-                    key={`${tile.x}${tile.y}`}
-                    onClick={this.handleTileClick}
-                  />
-                ))}
-              </div>
-            ))}
+        <div className="row border">
+          <div
+            style={{
+              margin: 10,
+              borderRadius: 3,
+              padding: 5,
+              fontSize: 20,
+              border: "solid thin red",
+              // give it a fixed width to prevent jumping when a negative sign is applied
+              width: "200px",
+            }}
+            className="bombs"
+          >
+            Bombs remaining: {bombCount}
+          </div>
+          <div style={{ margin: "auto" }}>
+            {board &&
+              board.map((row, i) => (
+                <div key={i} style={{ display: "flex" }}>
+                  {row.map(tile => (
+                    <Tile
+                      {...tile}
+                      flipped={
+                        revealAllTiles
+                          ? true
+                          : revealNoTiles
+                          ? false
+                          : tile.flipped
+                      }
+                      // make sure the flags are removed after the game is reset
+                      flagged={revealNoTiles ? false : tile.flagged}
+                      key={`${tile.x}${tile.y}`}
+                      onClick={this.handleTileClick}
+                      disabled={disableTiles || tile.flipped}
+                    />
+                  ))}
+                </div>
+              ))}
+          </div>
         </div>
       </>
     );

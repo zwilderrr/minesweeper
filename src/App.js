@@ -4,11 +4,8 @@ import "./App.css";
 import Game from "./Game";
 
 function App() {
-  return (
-    <div>
-      <Game />
-    </div>
-  );
+  // Game component takes care of monitoring the game state (eg level, grid size, in-progress, etc)
+  return <Game />;
 }
 
 export default App;
