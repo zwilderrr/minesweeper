@@ -74,7 +74,6 @@ function Game() {
           {LEVELS.map((menuLevel, i) => (
             <div
               key={i}
-              onClick={() => !buttonsDisabled && setLevel(menuLevel)}
               className="level-buttons"
               style={{
                 color: buttonsDisabled && "gray",
@@ -88,14 +87,15 @@ function Game() {
                     : // else keep the border there so there's no jumping when it's applied
                       "transparent",
               }}
+              onClick={() => !buttonsDisabled && setLevel(menuLevel)}
             >
               {menuLevel}
             </div>
           ))}
           <select
+            style={{ fontSize: 20, margin: 10 }}
             disabled={buttonsDisabled}
             onChange={e => setGridSize(parseInt(e.target.value))}
-            style={{ fontSize: 20, margin: 10 }}
           >
             <option value="4">4 x 4</option>
             <option value="8">8 x 8</option>
@@ -104,6 +104,7 @@ function Game() {
         </div>
         <div className="row">
           <div
+            className="start-button"
             style={{
               borderColor: buttonsDisabled && "#fed330",
               animation: gameInPlay && "none",
@@ -111,7 +112,6 @@ function Game() {
             onClick={() => {
               setGameStatus(buttonsDisabled ? "waiting" : "playing");
             }}
-            className="start-button"
           >
             {buttonsDisabled ? "Reset" : "Start"}
           </div>

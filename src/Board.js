@@ -105,7 +105,7 @@ class Board extends React.Component {
 
   handleTileClick = (y, x, toggleFlag) => {
     let { board, bombCount } = this.state;
-    // nextTile createas a reference to board[y][x], so we never have to reassign board[y][x] = nextTile
+    // nextTile creates a reference to board[y][x], so we never have to reassign board[y][x] = nextTile
     // after making our changes to nextTile
     const nextTile = board[y][x];
 
@@ -121,6 +121,7 @@ class Board extends React.Component {
         this.flipTileAndSurroundingTiles(board, y, x);
       }
     }
+
     if (this.isGameWon()) {
       this.endGame(true);
       return;
@@ -181,6 +182,7 @@ class Board extends React.Component {
       <>
         <div className="row border">
           <div
+            className="bombs"
             style={{
               margin: 10,
               borderRadius: 3,
@@ -190,7 +192,6 @@ class Board extends React.Component {
               // give it a fixed width to prevent jumping when a negative sign is applied
               width: "200px",
             }}
-            className="bombs"
           >
             Bombs remaining: {bombCount}
           </div>
@@ -200,6 +201,7 @@ class Board extends React.Component {
                 <div key={i} style={{ display: "flex" }}>
                   {row.map(tile => (
                     <Tile
+                      key={`${tile.x}${tile.y}`}
                       {...tile}
                       flipped={
                         revealAllTiles
@@ -210,7 +212,6 @@ class Board extends React.Component {
                       }
                       // make sure the flags are removed after the game is reset
                       flagged={revealNoTiles ? false : tile.flagged}
-                      key={`${tile.x}${tile.y}`}
                       onClick={this.handleTileClick}
                       disabled={disableTiles || tile.flipped}
                     />
