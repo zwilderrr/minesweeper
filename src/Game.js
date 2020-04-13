@@ -7,6 +7,7 @@ function Game() {
   return (
     // make something cool for each status
     <div className={gameStatus}>
+      {gameStatus}
       <Board
         level={"easy"}
         height={10}

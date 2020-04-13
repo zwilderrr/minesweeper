@@ -139,6 +139,11 @@ class Board extends React.Component {
     this.props.setGameStatus(gameWon ? "won" : "lost");
   }
 
+  resetGame = () => {
+    this.props.setGameStatus("waiting");
+    this.initializeBoard();
+  };
+
   render() {
     const { gameStatus } = this.props;
     const { board, bombCount } = this.state;
@@ -147,13 +152,7 @@ class Board extends React.Component {
 
     return (
       <>
-        <button
-          onClick={() =>
-            this.setState({ revealAll: false }, this.initializeBoard)
-          }
-        >
-          Reset Game
-        </button>
+        <button onClick={() => this.resetGame()}>Reset Game</button>
         {bombCount}
 
         <div>
