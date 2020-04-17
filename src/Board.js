@@ -193,7 +193,7 @@ class Board extends React.Component {
               width: "200px",
             }}
           >
-            Bombs remaining: {bombCount}
+            Bombs remaining: {revealNoTiles ? "0" : bombCount}
           </div>
           <div style={{ margin: "auto" }}>
             {board &&
