@@ -5,11 +5,11 @@ import "./Game.css";
 const LEVELS = ["easy", "medium", "hard"];
 
 function Game() {
-  const timer = useRef(false);
+  // const timer = useRef(false);
   const [level, setLevel] = useState("medium");
   const [gridSize, setGridSize] = useState(4);
   const [time, setTime] = useState(0);
-  const [finishedGameTime, setFinishedGameTime] = useState(0);
+  // const [finishedGameTime, setFinishedGameTime] = useState(0);
   const [gameStatus, setGameStatus] = useState("waiting");
   const gameInPlay = gameStatus === "playing";
   const gameOver = gameStatus === "won" || gameStatus === "lost";
@@ -19,44 +19,59 @@ function Game() {
     setGameStatus(result);
   };
 
-  function increaseTime() {
-    setTime(time + 1);
-  }
-
   useEffect(() => {
-    // gives the `increaseTime` function a closure over the current value of `time`,
-    timer.current = increaseTime;
-  });
+    const timer = setInterval(() => {
+      setTime(time + 1);
+    }, 1000);
 
-  useEffect(() => {
-    function addSecond() {
-      timer.current();
-    }
-
-    if (gameOver) {
-      // store the previous game's time so the player can relish in his accomplishment (or failure!)
-      setFinishedGameTime(time);
-    } else {
-      // otherwise, reset it to zero so it doesn't persist when the 'reset' button is clicked
-      setFinishedGameTime(0);
-    }
-
-    let timerId = setInterval(addSecond, 1000);
-
-    if (gameStatus !== "playing") {
-      clearInterval(timerId);
+    if (gameStatus === "waiting") {
+      clearInterval(timer);
       setTime(0);
     }
 
-    return () => clearInterval(timerId);
-  }, [gameStatus]);
+    if (gameOver) {
+      clearInterval(timer);
+      setTime(time);
+    }
+    return () => clearInterval(timer);
+  });
+
+  // function increaseTime() {
+  //   setTime(time + 1);
+  // }
+
+  // useEffect(() => {
+  //   // gives the `increaseTime` function a closure over the current value of `time`,
+  //   timer.current = increaseTime;
+  // });
+
+  // useEffect(() => {
+  //   function addSecond() {
+  //     timer.current();
+  //   }
+
+  //   if (gameOver) {
+  //     // store the previous game's time so the player can relish in his accomplishment (or failure!)
+  //     setFinishedGameTime(time);
+  //   } else {
+  //     // otherwise, reset it to zero so it doesn't persist when the 'reset' button is clicked
+  //     setFinishedGameTime(0);
+  //   }
+
+  //   let timerId = setInterval(addSecond, 1000);
+
+  //   if (gameStatus !== "playing") {
+  //     clearInterval(timerId);
+  //     setTime(0);
+  //   }
+
+  //   return () => clearInterval(timerId);
+  // }, [gameStatus]);
 
   function getDisplayTime() {
     // add zeros to our second count
     let padding = "";
-    let displayTime = gameInPlay
-      ? time.toString()
-      : finishedGameTime.toString();
+    let displayTime = time.toString();
 
     if (displayTime.length === 1) {
       padding = "00";
@@ -65,6 +80,8 @@ function Game() {
     }
     return padding + displayTime;
   }
+
+  const displayTime = getDisplayTime();
 
   return (
     <div className="game">
@@ -115,7 +132,7 @@ function Game() {
           >
             {buttonsDisabled ? "Reset" : "Start"}
           </div>
-          <div className="timer">{getDisplayTime()}s</div>
+          <div className="timer">{displayTime}s</div>
         </div>
       </div>
       <Board
