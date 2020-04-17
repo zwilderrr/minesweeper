@@ -5,11 +5,9 @@ import "./Game.css";
 const LEVELS = ["easy", "medium", "hard"];
 
 function Game() {
-  // const timer = useRef(false);
   const [level, setLevel] = useState("medium");
   const [gridSize, setGridSize] = useState(4);
   const [time, setTime] = useState(0);
-  // const [finishedGameTime, setFinishedGameTime] = useState(0);
   const [gameStatus, setGameStatus] = useState("waiting");
   const gameInPlay = gameStatus === "playing";
   const gameOver = gameStatus === "won" || gameStatus === "lost";
@@ -35,38 +33,6 @@ function Game() {
     }
     return () => clearInterval(timer);
   });
-
-  // function increaseTime() {
-  //   setTime(time + 1);
-  // }
-
-  // useEffect(() => {
-  //   // gives the `increaseTime` function a closure over the current value of `time`,
-  //   timer.current = increaseTime;
-  // });
-
-  // useEffect(() => {
-  //   function addSecond() {
-  //     timer.current();
-  //   }
-
-  //   if (gameOver) {
-  //     // store the previous game's time so the player can relish in his accomplishment (or failure!)
-  //     setFinishedGameTime(time);
-  //   } else {
-  //     // otherwise, reset it to zero so it doesn't persist when the 'reset' button is clicked
-  //     setFinishedGameTime(0);
-  //   }
-
-  //   let timerId = setInterval(addSecond, 1000);
-
-  //   if (gameStatus !== "playing") {
-  //     clearInterval(timerId);
-  //     setTime(0);
-  //   }
-
-  //   return () => clearInterval(timerId);
-  // }, [gameStatus]);
 
   function getDisplayTime() {
     // add zeros to our second count
